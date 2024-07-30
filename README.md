@@ -6,9 +6,6 @@ https://www.metabase.com/learn/administration/git-based-workflow
 ## Table of Contents
 * [Technologies Used](#technologies-used)
 * [Configuration](#configuration)
-* [Workflows](#workflows)
-  * [Export Data Model](#export-data-model)
-  * [Import Data Model](#import-data-model)
 * [Room for Improvement](#room-for-improvement)
 
 ## Technologies Used
@@ -36,6 +33,9 @@ Before running the workflows, you need to set up the following secrets in your G
    - `METABASE_API_KEY`: The API key for Metabase.
    - `PAT_TOKEN`: Personal Access Token for accessing the repositories.
    - `GITHUB_TOKEN`: (If not already available) GitHub token for the workflow.
+  
+ 2. **Ngrok:**
+    Ngrok is included soley as a means to create a passthrough to a local device or container that isn't publically accessible.
 
 ### Example Configuration
 
