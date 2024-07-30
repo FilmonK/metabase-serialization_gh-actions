@@ -1,4 +1,4 @@
-# Metabase Serialization for Import and Export
+# Metabase Serialization using Github Actions
 
 This repository provides a setup for importing and exporting Metabase data models using serialization from a single staging instance to a single production instance. The workflow automates the process of exporting data models from a staging Metabase instance and importing them into a production instance. This is just a base line and should be considered a template to reference along with help articles such as the following.
 https://www.metabase.com/learn/administration/git-based-workflow
