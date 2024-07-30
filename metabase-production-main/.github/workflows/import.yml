@@ -14,12 +14,12 @@ env:
   MB_VERSION: 1.50.15
   MB_DB_TYPE: postgres
   MB_DB_DBNAME: ${{ secrets.MB_DB_DBNAME }}
-  MB_DB_HOST: ${{ secrets.MB_DB_HOST }} # <-- If testing using local environment such as localhost, use a tool lik Ngrok to provide passthrough
-  MB_DB_PORT: ${{ secrets.MB_DB_PORT }} # <-- If testing using local environment such as localhost, use a tool lik Ngrok to provide passthrough
+  MB_DB_HOST: ${{ secrets.MB_DB_HOST }} # <-- If testing using local environment such as localhost, use a tool like Ngrok to provide passthrough
+  MB_DB_PORT: ${{ secrets.MB_DB_PORT }} # <-- If testing using local environment such as localhost, use a tool like Ngrok to provide passthrough
   MB_DB_USER: ${{ secrets.MB_DB_USER }}
   MB_DB_PASS: ${{ secrets.MB_DB_PASS }}
   MB_PREMIUM_EMBEDDING_TOKEN: ${{ secrets.MB_PREMIUM_EMBEDDING_TOKEN }} # <-- May not be necessary when using API but leaving here as reference for example below
-  METABASE_URL: ${{ secrets.METABASE_URL }} # <-- If testing using local environment such as localhost, use a tool lik Ngrok to provide passthrough
+  METABASE_URL: ${{ secrets.METABASE_URL }} # <-- If testing using local environment such as localhost, use a tool like Ngrok to provide passthrough
   METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
   PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
   STAGING_REPO: # <-- example: JohnC/metabase-staging
