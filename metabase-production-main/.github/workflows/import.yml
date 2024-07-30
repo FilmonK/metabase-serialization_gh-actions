@@ -22,7 +22,7 @@ env:
   METABASE_URL: ${{ secrets.METABASE_URL }} # <-- If testing using local environment such as localhost, use a tool lik Ngrok to provide passthrough
   METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
   PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-  STAGING_REPO: FilmonK/metabase-staging
+  STAGING_REPO: # <-- example: JohnC/metabase-staging
   STAGING_REPO_URL: https://github.com/link_to_staging_your_repo.git 
   PRODUCTION_REPO_URL: https://github.com/link_to_your_production_repo.git
 
@@ -96,5 +96,5 @@ jobs:
           git add import_log.txt
           if [[ $(git diff --cached --stat) != '' ]]; then
             git commit -m "Automatic import of the data model"
-            git push "https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/FilmonK/metabase-production.git"
+            git push "https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/link_to_staging_your_repo.git"
           fi
