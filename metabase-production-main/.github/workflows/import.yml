@@ -1,0 +1,100 @@
+name: import-datamodel-from-staging
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 */6 * * *' # Every six hours every day
+
+permissions:
+  contents: write
+  
+env:
+  MB_VERSION: 1.50.15
+  MB_DB_TYPE: postgres
+  MB_DB_DBNAME: ${{ secrets.MB_DB_DBNAME }}
+  MB_DB_HOST: ${{ secrets.MB_DB_HOST }} # <-- If testing using local environment such as localhost, use a tool lik Ngrok to provide passthrough
+  MB_DB_PORT: ${{ secrets.MB_DB_PORT }} # <-- If testing using local environment such as localhost, use a tool lik Ngrok to provide passthrough
+  MB_DB_USER: ${{ secrets.MB_DB_USER }}
+  MB_DB_PASS: ${{ secrets.MB_DB_PASS }}
+  MB_PREMIUM_EMBEDDING_TOKEN: ${{ secrets.MB_PREMIUM_EMBEDDING_TOKEN }} # <-- May not be necessary when using API but leaving here as reference for example below
+  METABASE_URL: ${{ secrets.METABASE_URL }} # <-- If testing using local environment such as localhost, use a tool lik Ngrok to provide passthrough
+  METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
+  PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+  STAGING_REPO: FilmonK/metabase-staging
+  STAGING_REPO_URL: https://github.com/link_to_staging_your_repo.git 
+  PRODUCTION_REPO_URL: https://github.com/link_to_your_production_repo.git
+
+jobs:
+  import_data_model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout production repository
+        uses: actions/checkout@v4
+        with:
+          repository: <your production repo> # <-- example: JohnC/metabase-production
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Clone staging repository
+        run: |
+          git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/link_to_staging_your_repo.git  staging-repo
+
+      - name: Change to staging Metabase directory
+        run: |
+          cd staging-repo
+    
+      - name: Cache Metabase JAR
+        id: cache-metabase-jar
+        uses: actions/cache@v3
+        with:
+            path: metabase.jar
+            key: metabase-jar-${{ env.MB_VERSION }}
+            restore-keys: |
+              metabase-jar-
+  
+      - name: Download Metabase JAR
+        if: steps.cache-metabase-jar.outputs.cache-hit != 'true'
+        run: |
+            curl -OL https://downloads.metabase.com/enterprise/v${{ env.MB_VERSION }}/metabase.jar
+
+      - name: Import Metabase Data
+        run: |
+          curl -X POST \
+            -H "x-api-key: ${{ secrets.METABASE_API_KEY }}" \
+            -F file=@./staging-repo/metabase_data.tgz \
+            -F db_type=postgres \
+            -F db_name=${{ secrets.MB_DB_DBNAME }} \
+            -F db_host=${{ secrets.MB_DB_HOST }} \
+            -F db_port=${{ secrets.MB_DB_PORT }} \
+            -F db_user=${{ secrets.MB_DB_USER }} \
+            -F db_pass=${{ secrets.MB_DB_PASS }} \
+            "${{ secrets.METABASE_URL }}/api/ee/serialization/import" -o -
+      
+       # **** Leaving this in place as an example to do the import without using the API ****
+      # - name: Import Metabase Data
+      #   run: |
+      #     java -jar metabase.jar import ./staging-repo/metabase_data.tgz
+      #   env:
+      #     MB_DB_TYPE: postgres
+      #     MB_DB_DBNAME: ${{ secrets.MB_DB_DBNAME }}
+      #     MB_DB_HOST: ${{ secrets.MB_DB_HOST }}
+      #     MB_DB_PORT: ${{ secrets.MB_DB_PORT }}
+      #     MB_DB_USER: ${{ secrets.MB_DB_USER }}
+      #     MB_DB_PASS: ${{ secrets.MB_DB_PASS }}
+      #     MB_PREMIUM_EMBEDDING_TOKEN: ${{ secrets.MB_PREMIUM_EMBEDDING_TOKEN }}
+
+      - name: Commit and Push Import Log
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          echo "Import completed at $(date)" > import_log.txt
+          git add import_log.txt
+          if [[ $(git diff --cached --stat) != '' ]]; then
+            git commit -m "Automatic import of the data model"
+            git push "https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/FilmonK/metabase-production.git"
+          fi

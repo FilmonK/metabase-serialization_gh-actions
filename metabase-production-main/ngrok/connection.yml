@@ -1,0 +1,11 @@
+version: 2
+authtoken: [YOUR_AUTH_TOKEN]
+tunnels:
+  first:
+    proto: http
+    # Metabase localhost address and port
+    addr: localhost:3000
+    # SQL server localhost port
+  second:
+    proto: tcp
+    addr: 5432

@@ -1,0 +1,74 @@
+name: export-datamodel-from-staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 */6 * * *' # Every six hours every day
+
+env:
+  MB_VERSION: 1.50.15
+  METABASE_URL: ${{ secrets.METABASE_URL }}
+  METABASE_API_KEY: ${{ secrets.METABASE_API_KEY }}
+  MB_DB_TYPE: postgres
+  MB_DB_DBNAME: ${{ secrets.MB_DB_DBNAME }}
+  MB_DB_HOST: ${{ secrets.MB_DB_HOST }}
+  MB_DB_PORT: ${{ secrets.MB_DB_PORT }}
+  MB_DB_USER: ${{ secrets.MB_DB_USER }}
+  MB_DB_PASS: ${{ secrets.MB_DB_PASS }}
+
+jobs:
+  export_data_model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Downloading Metabase.jar file and using cache for future calls and performance
+      - name: Cache Metabase JAR
+        id: cache-metabase-jar
+        uses: actions/cache@v3
+        with:
+          path: ./metabase.jar
+          key: metabase-jar-${{ env.MB_VERSION }}
+          restore-keys: |
+            metabase-jar-
+
+      - name: Download selected version enterprise jar
+        if: steps.cache-metabase-jar.outputs.cache-hit != 'true'
+        run: |
+          curl -OL https://downloads.metabase.com/enterprise/v$MB_VERSION/metabase.jar
+          stat ./metabase.jar
+
+      - name: Export Metabase Data
+        run: |
+          curl \
+            -H "x-api-key: ${{ secrets.METABASE_API_KEY }}" \
+            -X POST "$METABASE_URL/api/ee/serialization/export" \
+            -o metabase_data.tgz
+
+      # **** Leaving this in place as an example to do the export without using the API ****
+      # - name: Export datamodel
+      #   run: |
+      #     java -jar metabase.jar export $GITHUB_WORKSPACE --no-settings
+      #   env:
+      #     MB_DB_TYPE: postgres
+      #     MB_DB_DBNAME: ${{ secrets.MB_DB_DBNAME }}
+      #     MB_DB_HOST: ${{ secrets.MB_DB_HOST }}
+      #     MB_DB_USER: postgres
+      #     MB_DB_PASS: ${{ secrets.MB_DB_PASS }}
+
+      - name: Commit and Push Exported Data
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add metabase_data.tgz
+          if [[ $(git diff --cached --stat) != '' ]]; then
+            git commit -m "Automatic export of the data model"
+            git push
+          fi
