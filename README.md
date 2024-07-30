@@ -34,8 +34,11 @@ Before running the workflows, you need to set up the following secrets in your G
    - `PAT_TOKEN`: Personal Access Token for accessing the repositories.
    - `GITHUB_TOKEN`: (If not already available) GitHub token for the workflow.
   
- 2. **Ngrok:**
-    Ngrok is included soley as a means to create a passthrough to a local device or container that isn't publically accessible.
+2. **Ngrok:**
+Ngrok is included soley as a means to create a passthrough to a local device or container that isn't publically accessible.
+
+3. **Considerations:**
+The YML files are currently set to perform Actions based on when there's a push to the main branch of a repo, as well as a cron schedule. Make adjustments that are more suited to your workflow, whether that's a different schedule or branch logic.
 
 ### Example Configuration
 
