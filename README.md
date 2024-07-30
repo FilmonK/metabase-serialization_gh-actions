@@ -1,6 +1,7 @@
 # Metabase Serialization for Import and Export
 
-This repository provides a setup for importing and exporting Metabase data models using serialization. The workflow automates the process of exporting data models from a staging Metabase instance and importing them into a production instance.
+This repository provides a setup for importing and exporting Metabase data models using serialization. The workflow automates the process of exporting data models from a staging Metabase instance and importing them into a production instance. This is just a base line and should be considered a template to reference along with help articles such as the following.
+https://www.metabase.com/learn/administration/git-based-workflow
 
 ## Table of Contents
 * [Technologies Used](#technologies-used)
@@ -11,10 +12,12 @@ This repository provides a setup for importing and exporting Metabase data model
 * [Room for Improvement](#room-for-improvement)
 
 ## Technologies Used
-- Metabase
-- GitHub Actions
-- PostgreSQL
-- ngrok
+- [Metabase](https://www.metabase.com/)
+- [Metabase Serialization](https://www.metabase.com/docs/latest/installation-and-operation/serialization)
+- [GitHub Actions](https://github.com/features/actions)
+- [PostgreSQL](https://www.postgresql.org/)
+- [ngrok](https://ngrok.com/)
+
 
 ## Configuration
 
@@ -44,8 +47,13 @@ Before running the workflows, you need to set up the following secrets in your G
 2. **Environment Variables:**
    - The workflows use environment variables to reference the secrets.
 
-## Workflows
 
-### Export Data Model
 
-This workflow exports the data model from the staging Metabase instance and pushes the serialized data to the repository.
+## Room for Improvement
+- Implement retry logic for the import process to handle transient errors.
+- Enhance logging for better monitoring and troubleshooting.
+- Ensure that the workflows are compatible with other database engines.
+- Add more comprehensive error handling and notifications for workflow failures.
+
+By following these configurations, you can automate the import and export processes for Metabase data models using GitHub Actions and ensure sensitive information is securely managed through GitHub Secrets.
+
