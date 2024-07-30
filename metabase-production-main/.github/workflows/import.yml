@@ -46,6 +46,7 @@ jobs:
         run: |
           cd staging-repo
     
+      # Downloading Metabase.jar file and using cache for future calls and performance
       - name: Cache Metabase JAR
         id: cache-metabase-jar
         uses: actions/cache@v3
