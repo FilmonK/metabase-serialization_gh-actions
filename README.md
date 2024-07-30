@@ -37,8 +37,14 @@ Before running the workflows, you need to set up the following secrets in your G
 2. **Ngrok:**
 Ngrok is included soley as a means to create a passthrough to a local device or container that isn't publically accessible.
 
-3. **Considerations:**
+3. **Branches and scheduling:**
 The YML files are currently set to perform Actions based on when there's a push to the main branch of a repo, as well as a cron schedule. Make adjustments that are more suited to your workflow, whether that's a different schedule or branch logic.
+
+4. **Github permissions:**
+Make sure the needed permissions are set in Settings --> Actions --> General
+   - Actions Permissions
+   - Workflow permissions
+
 
 ### Example Configuration
 
