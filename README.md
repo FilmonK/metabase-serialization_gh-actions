@@ -6,6 +6,7 @@ https://www.metabase.com/learn/administration/git-based-workflow
 ## Table of Contents
 * [Technologies Used](#technologies-used)
 * [Configuration](#configuration)
+* [Workflows](#workflows)
 * [Room for Improvement](#room-for-improvement)
 
 ## Technologies Used
@@ -15,6 +16,13 @@ https://www.metabase.com/learn/administration/git-based-workflow
 - [PostgreSQL](https://www.postgresql.org/)
 - [ngrok](https://ngrok.com/)
 
+## Workflows
+There are two export workflows.
+- "export.yml" goes through the process of making an API call to serialize and create the .tgz file
+- "export_filebased-workflow.yml" assumes you will be making edits locally to the YML files of an already decompressed serialization export. As those files are pushed to the main branch of your repo, they are compressed into a .tgz file that can be used to import using the serialization API.
+
+## Tagging
+Tags are applied to the export workflows
 
 ## Configuration
 
