@@ -43,12 +43,11 @@ jobs:
           curl -OL https://downloads.metabase.com/enterprise/v$MB_VERSION/metabase.jar
           stat ./metabase.jar
 
-      - name: Export Metabase Data
+      # Compress into a tgz file.
+      # This example assumes you have a "metabase_data" folder in your repo that holds uncompressed serialization content
+      - name: Compress Modified Data
         run: |
-          curl \
-            -H "x-api-key: ${{ secrets.METABASE_API_KEY }}" \
-            -X POST "$METABASE_URL/api/ee/serialization/export" \
-            -o metabase_data.tgz
+          tar -czf metabase_data.tgz metabase_data/
 
       # **** Leaving this in place as an example to do the export without using the API ****
       # - name: Export datamodel
