@@ -1,24 +1,25 @@
 # Metabase Serialization with GitHub Actions
 
-This project demonstrates how to automate the export and import of Metabase configurations using GitHub Actions and Metabase’s built-in serialization features. It enables teams to manage dashboards, questions, and models as version-controlled code — streamlining deployment workflows across staging and production environments.
+This project is intended for Metabase administrators and data teams who are **already familiar with Metabase's serialization system** and are looking to **explore CI/CD-style workflows using GitHub Actions**.
 
-By leveraging GitHub Actions and Metabase's serialization API, this project allows you to:
+Instead of walking through the basics of serialization, this project focuses on **practical examples** of how teams can:
 
-- Automatically export the current Metabase configuration from a staging instance
-- Store serialized files in your GitHub repository
-- Automatically apply those changes to a production Metabase instance
+- Automate the export of Metabase assets using the serialization API
+- Commit YAML-based definitions to source control
+- Automatically compress changes into `.tgz` archives for import into other environments
 
-This approach helps teams:
+It serves as a reference for implementing workflows that support:
 
-- Maintain a single source of truth for analytics configuration
-- Eliminate manual re-creation of dashboards and questions between environments
-- Version changes to BI assets alongside application code
+- Version control of dashboards, questions, models, and metadata
+- Promotion of changes across dev → staging → production
+- Better traceability and rollback using Git history
 
-> **Built for Metabase admins and data teams who want CI/CD for dashboards**  
->  
-> **Note:** This project serves as a template and reference implementation. It’s designed to demonstrate key concepts and workflows, not as a turnkey production solution.  
-> For more guidance on using Metabase’s serialization in practice, see the official documentation:  
-> [Metabase Git-Based Workflow →](https://www.metabase.com/learn/administration/git-based-workflow)
+For full background on how serialization works and the structure of exported files, see the official Metabase documentation:
+
+> 🔗 [Metabase Git-Based Workflow](https://www.metabase.com/learn/administration/git-based-workflow)  
+> 🔗 [Metabase Serialization Reference](https://www.metabase.com/docs/latest/installation-and-operation/serialization)
+
+> ⚠️ **Note:** This project is a reference implementation, not a production-ready solution. It should be adapted based on your infrastructure, team practices, and deployment pipeline.
 
 ---
 
