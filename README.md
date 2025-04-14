@@ -1,29 +1,82 @@
-# Metabase Serialization using Github Actions
+# Metabase Serialization with GitHub Actions
 
-This repository provides a setup for importing and exporting Metabase data models using serialization from a **single staging instance** to a **single production instance**. The workflow automates the process of exporting data models from a staging Metabase instance and importing them into a production instance. This example has been broken up into two workflows but there's no reason they can't be combined based on the use case.
-This is just a base line and should be considered a template to reference along with help articles such as the following. 
-https://www.metabase.com/learn/administration/git-based-workflow
+This project demonstrates how to automate the export and import of Metabase configurations using GitHub Actions and Metabase’s built-in serialization features. It enables teams to manage dashboards, questions, and models as version-controlled code — streamlining deployment workflows across staging and production environments.
+
+By leveraging GitHub Actions and Metabase's serialization API, this project allows you to:
+
+- Automatically export the current Metabase configuration from a staging instance
+- Store serialized files in your GitHub repository
+- Automatically apply those changes to a production Metabase instance
+
+This approach helps teams:
+
+- Maintain a single source of truth for analytics configuration
+- Eliminate manual re-creation of dashboards and questions between environments
+- Version changes to BI assets alongside application code
+
+> **Built for Metabase admins and data teams who want CI/CD for dashboards**  
+>  
+> **Note:** This project serves as a template and reference implementation. It’s designed to demonstrate key concepts and workflows, not as a turnkey production solution.  
+> For more guidance on using Metabase’s serialization in practice, see the official documentation:  
+> [Metabase Git-Based Workflow →](https://www.metabase.com/learn/administration/git-based-workflow)
+
+---
 
 ## Table of Contents
-* [Technologies Used](#technologies-used)
-* [Configuration](#configuration)
-* [Workflows](#workflows)
-* [Room for Improvement](#room-for-improvement)
+
+- [Technologies Used](#technologies-used)
+- [Workflows](#workflows)
+- [Tagging](#tagging)
+- [Configuration](#configuration)
+  - [Secrets Configuration](#secrets-configuration)
+  - [Example Configuration](#example-configuration)
+- [Room for Improvement](#room-for-improvement)
+
+---
 
 ## Technologies Used
+
 - [Metabase](https://www.metabase.com/)
 - [Metabase Serialization](https://www.metabase.com/docs/latest/installation-and-operation/serialization)
 - [GitHub Actions](https://github.com/features/actions)
 - [PostgreSQL](https://www.postgresql.org/)
 - [ngrok](https://ngrok.com/)
 
+---
+
 ## Workflows
-There are two export workflows.
-- "export.yml" goes through the process of making an API call to serialize and create the .tgz file
-- "export_filebased-workflow.yml" assumes you will be making edits locally to the YML files of an already decompressed serialization export. As those files are pushed to the main branch of your repo, they are compressed into a .tgz file that can be used to import using the serialization API.
+
+This repo contains two export workflows, depending on how you plan to maintain your serialization files:
+
+### 1. `export.yml`
+
+This workflow performs a full export of your Metabase instance using the serialization API. It:
+
+- Makes an API call to Metabase’s `/api/serialization/export` endpoint.
+- Stores the result as a `.tgz` file.
+- Commits the export artifact back into the repository (or into your preferred GitHub release or storage solution).
+
+### 2. `export_filebased-workflow.yml`
+
+This workflow is intended for file-based workflows where:
+
+- The `.tgz` file is not committed directly.
+- You manage individual YAML files in source control.
+- On push to `main`, the YAML files are re-packaged into a `.tgz` file.
+- The `.tgz` is ready for import via the Metabase serialization API.
+
+This is useful for teams who want to treat Metabase objects as editable source files rather than opaque exports.
+
+---
 
 ## Tagging
-Tags are applied to the export workflows
+
+Each export workflow supports optional GitHub tagging to help you:
+
+- Track which configuration was deployed at what point in time.
+- Reference a specific serialized state of Metabase for rollback or migration purposes.
+
+---
 
 ## Configuration
 
@@ -31,47 +84,56 @@ Tags are applied to the export workflows
 
 Before running the workflows, you need to set up the following secrets in your GitHub repository:
 
-1. **GitHub Repository Secrets:**
-   - `MB_DB_DBNAME`: The database name for Metabase.
-   - `MB_DB_HOST`: The database host.
-   - `MB_DB_PORT`: The database port.
-   - `MB_DB_USER`: The database user.
-   - `MB_DB_PASS`: The database password.
-   - `MB_PREMIUM_EMBEDDING_TOKEN`: The Metabase embedding token.
-   - `METABASE_URL`: The URL of the Metabase instance.
-   - `METABASE_API_KEY`: The API key for Metabase.
-   - `PAT_TOKEN`: Personal Access Token for accessing the repositories.
-   - `GITHUB_TOKEN`: (If not already available) GitHub token for the workflow.
-  
-2. **Ngrok:**
-Ngrok is included soley as a means to create a passthrough to a local device or container that isn't publically accessible.
+#### GitHub Repository Secrets
 
-3. **Branches and scheduling:**
-The YML files are currently set to perform Actions based on when there's a push to the main branch of a repo, as well as a cron schedule. Make adjustments that are more suited to your workflow, whether that's a different schedule or branch logic.
+| Name | Description |
+|------|-------------|
+| `MB_DB_DBNAME` | Name of the Metabase application database |
+| `MB_DB_HOST` | Host of the Metabase application database |
+| `MB_DB_PORT` | Port of the Metabase application database |
+| `MB_DB_USER` | Database user |
+| `MB_DB_PASS` | Database password |
+| `MB_PREMIUM_EMBEDDING_TOKEN` | Metabase token (if applicable) |
+| `METABASE_URL` | Base URL of the Metabase instance |
+| `METABASE_API_KEY` | Metabase API key |
+| `PAT_TOKEN` | GitHub Personal Access Token |
+| `GITHUB_TOKEN` | GitHub Actions token (default available) |
 
-4. **Github permissions:**
-Make sure the needed permissions are set in Settings --> Actions --> General
-   - Actions Permissions
-   - Workflow permissions
+### Ngrok (Optional)
 
+Ngrok is used to expose a local container or VM-hosted Metabase instance for testing the workflow against a private or local environment.
+
+---
 
 ### Example Configuration
 
-1. **Setting Up Secrets in GitHub:**
-   - Go to your GitHub repository.
-   - Navigate to `Settings` > `Secrets and variables` > `Actions`.
-   - Add the required secrets with their corresponding values.
+1. **Add Secrets**
 
-2. **Environment Variables:**
-   - The workflows use environment variables to reference the secrets.
+Go to your GitHub repo → `Settings` → `Secrets and variables` → `Actions` → Add the secrets listed above.
 
+2. **Set Permissions**
 
+Ensure the following are enabled under `Settings` → `Actions` → `General`:
+
+- Allow GitHub Actions to access secrets
+- Enable `Read and write` under "Workflow permissions"
+
+3. **Workflow Triggers**
+
+Each workflow can be triggered by:
+
+- A `push` to the `main` branch
+- A scheduled cron job (customizable)
+
+Feel free to modify these based on your team’s workflow.
+
+---
 
 ## Room for Improvement
-- Implement retry logic for the import process to handle transient errors.
-- Enhance logging for better monitoring and troubleshooting.
-- Ensure that the workflows are compatible with other database engines.
-- Add more comprehensive error handling and notifications for workflow failures.
 
-By following these configurations, you can automate the import and export processes for Metabase data models using GitHub Actions and ensure sensitive information is securely managed through GitHub Secrets.
+- Add retry logic for imports to avoid failures due to transient network/API errors.
+- Add CI test hooks to validate YAML structure before packaging for import.
+- Customize tagging and release strategy for better version control.
+- Enhance Slack or email notification for success/failure.
+- Expand compatibility for non-PostgreSQL environments.
 
